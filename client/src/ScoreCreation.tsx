@@ -9,11 +9,11 @@ export const ScoreCreation = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const username = data.get("username");
+    const userId = data.get("userId");
     const score = data.get("score");
 
     console.log({
-      username,
+      userId,
       score,
     });
   };
@@ -37,9 +37,9 @@ export const ScoreCreation = () => {
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Username"
-            name="username"
+            id="userId"
+            label="User ID"
+            name="userId"
             autoFocus
           />
           <TextField

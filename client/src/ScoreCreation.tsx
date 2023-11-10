@@ -9,11 +9,13 @@ export const ScoreCreation = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const userId = data.get("userId");
+    const username = data.get("username");
     const score = data.get("score");
 
+    // TODO: search local storage for username and find id and send that id to the program
+
     console.log({
-      userId,
+      username,
       score,
     });
   };
@@ -37,9 +39,9 @@ export const ScoreCreation = () => {
             margin="normal"
             required
             fullWidth
-            id="userId"
-            label="User ID"
-            name="userId"
+            id="username"
+            label="Username"
+            name="username"
             autoFocus
           />
           <TextField

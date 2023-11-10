@@ -11,8 +11,13 @@ export const ScoreCreation = () => {
     try {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      const username = String(data.get("username"));
-      const score = parseInt(String(data.get("score")));
+      const un = data.get("username");
+      const sc = data.get("score");
+
+      if (!un || !sc) throw new Error("Missing inputs");
+
+      const username = un.toString();
+      const score = parseInt(sc.toString());
 
       const user = storeUser(username, score);
       // TODO: send id and user data to the program

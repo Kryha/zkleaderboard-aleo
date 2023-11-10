@@ -4,20 +4,23 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { storeUser } from "./db";
 
 export const ScoreCreation = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const username = data.get("username");
-    const score = data.get("score");
+    try {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const username = String(data.get("username"));
+      const score = parseInt(String(data.get("score")));
 
-    // TODO: search local storage for username and find id and send that id to the program
+      const user = storeUser(username, score);
+      // TODO: send id and user data to the program
 
-    console.log({
-      username,
-      score,
-    });
+      console.log("User stored:", user);
+    } catch (error) {
+      console.error("On submit error:", error);
+    }
   };
 
   return (

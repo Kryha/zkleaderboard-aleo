@@ -13,7 +13,7 @@ const deploy = async () => {
     const ALEO_PRIVATE_KEY = process.env.VITE_PRIVATE_KEY;
     const ALEO_PROGRAM_NAME = process.env.VITE_PROGRAM_NAME;
 
-    if (!ALEO_NETWORK_URL || !ALEO_PRIVATE_KEY) {
+    if (!ALEO_NETWORK_URL || !ALEO_PRIVATE_KEY || !ALEO_PROGRAM_NAME) {
       throw new Error("Missing env variables");
     }
 

@@ -4,18 +4,22 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { storeUser } from "./db";
+import { getUserMappingId } from "./db";
 import { Page } from "./utils";
-import { FC } from "react";
+import { FC, useState } from "react";
+import { sdk } from "./sdk";
 
 interface Props {
   setPage: (page: Page) => void;
 }
 
 export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
     try {
-      event.preventDefault();
       const data = new FormData(event.currentTarget);
       const un = data.get("username");
       const sc = data.get("score");
@@ -25,13 +29,14 @@ export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
       const username = un.toString();
       const score = parseInt(sc.toString());
 
-      const user = storeUser(username, score);
-      // TODO: send id and user data to the program
+      const mappingId = getUserMappingId(username);
+      await sdk.updateScore(mappingId, score);
 
-      console.log("User stored:", user);
+      console.log(`${username} stored with id ${mappingId}`);
     } catch (error) {
       console.error("On submit error:", error);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -46,7 +51,7 @@ export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
         }}
       >
         <Typography component="h1" variant="h5">
-          Create user score
+          {isLoading ? "Submitting user score..." : "Create user score"}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -75,7 +80,11 @@ export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
           >
             Submit Score
           </Button>
-          <Button fullWidth onClick={() => setPage("leaderboard")}>
+          <Button
+            disabled={isLoading}
+            fullWidth
+            onClick={() => setPage("leaderboard")}
+          >
             Leaderboard
           </Button>
         </Box>

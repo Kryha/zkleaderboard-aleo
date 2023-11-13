@@ -1,18 +1,20 @@
 import { z } from "zod";
 
-export interface Leaderboard {
-  standings: string[]; // array of usernames
-}
-
-const userSchema = z.object({
+const playerSchema = z.object({
   username: z.string(),
-  idInProgram: z.number(),
+  position: z.number(),
   score: z.number(),
+  gamesPlayed: z.number(),
 });
-export type User = z.infer<typeof userSchema>;
+export type Player = z.infer<typeof playerSchema>;
 
-// key is username
-const usersSchema = z.record(userSchema);
+export const leaderboardSchema = z.object({
+  players: z.array(playerSchema),
+});
+export type Leadeboard = z.infer<typeof leaderboardSchema>;
+
+// key is username, value is id in mapping (key of the mapping)
+const usersSchema = z.record(z.number());
 export type Users = z.infer<typeof usersSchema>;
 
 export const getUsers = (): Users => {
@@ -24,28 +26,34 @@ export const getUsers = (): Users => {
   return users;
 };
 
-export const storeUser = (username: string, score: number) => {
+export const getUserMappingId = (username: string) => {
   const users = getUsers();
 
-  const oldUser = users[username];
+  const userId = users[username];
 
-  let newUser: User;
+  if (userId) return userId;
 
-  if (oldUser) {
-    newUser = { ...oldUser, score };
-  } else {
-    const latestId = localStorage.getItem("id");
-    const id = latestId ? parseInt(latestId) : 1;
-    localStorage.setItem("id", `${id + 1}`);
-    newUser = { idInProgram: id, username, score };
-  }
+  const latestId = localStorage.getItem("id");
+  const id = latestId ? parseInt(latestId) : 1;
+  localStorage.setItem("id", `${id + 1}`);
 
   const newUsers = {
     ...users,
-    [username]: newUser,
+    [username]: id,
   } satisfies Users;
 
   localStorage.setItem("users", JSON.stringify(newUsers));
 
-  return newUser;
+  return id;
+};
+
+export const setLeaderboard = (leaderboard: Leadeboard) => {
+  localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+};
+
+export const getLeaderboard = (): Leadeboard | undefined => {
+  const unparsed = localStorage.getItem("leaderboard");
+  if (!unparsed) return;
+
+  return leaderboardSchema.parse(unparsed);
 };

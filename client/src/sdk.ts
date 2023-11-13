@@ -46,4 +46,8 @@ const updateScore = async (userId: number, score: number) => {
   return transaction;
 };
 
+// const retrieveLeaderboard = () => {
+// TODO: retrieve scores from the mapping, calculate rankings, store in local storage
+// };
+
 export const sdk = { updateScore };

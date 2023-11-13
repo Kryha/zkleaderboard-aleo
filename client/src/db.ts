@@ -47,7 +47,7 @@ export const getUserMappingId = (username: string) => {
   return id;
 };
 
-export const setLeaderboard = (leaderboard: Leadeboard) => {
+export const storeLeaderboard = (leaderboard: Leadeboard) => {
   localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 };
 

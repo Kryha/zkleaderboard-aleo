@@ -9,48 +9,40 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { FC } from "react";
-import { z } from "zod";
+import { FC, useEffect, useState } from "react";
 import { Page } from "./utils";
+import { Leadeboard, Player, getLeaderboard, storeLeaderboard } from "./db";
+import { sdk } from "./sdk";
 
 const COLUMN_WIDTH = { sm: "8.6%", md: "15.5%", lg: "44.8%" };
 
 const cells = ["Ranking", "Player", "Games", "Score"];
 
-const leaderboardDataSchema = z.object({
-  rank: z.number(),
-  username: z.string(),
-  score: z.number(),
-  gamesPlayed: z.number(),
-});
-
-export type LeaderboardData = z.infer<typeof leaderboardDataSchema>;
-
 interface Props {
-  leaderboard: LeaderboardData;
+  player: Player;
 }
 
-const LeaderboardRow: FC<Props> = ({ leaderboard }) => {
+const LeaderboardRow: FC<Props> = ({ player }) => {
   return (
-    <TableRow key={leaderboard.rank}>
+    <TableRow key={player.position}>
       <TableCell component="th" scope="row">
         <Typography variant="body1" color="customGrey.main">
-          {leaderboard.rank}
+          {player.position}
         </Typography>
       </TableCell>
       <TableCell>
         <Typography variant="body1" color="customGrey.main">
-          {leaderboard.username}
+          {player.username}
         </Typography>
       </TableCell>
       <TableCell>
         <Typography variant="body1" color="customGrey.main">
-          {leaderboard.gamesPlayed}
+          {player.gamesPlayed}
         </Typography>
       </TableCell>
       <TableCell>
         <Typography variant="body1" color="customGrey.main">
-          {leaderboard.score}
+          {player.score}
         </Typography>
       </TableCell>
     </TableRow>
@@ -58,10 +50,10 @@ const LeaderboardRow: FC<Props> = ({ leaderboard }) => {
 };
 
 interface LeaderboardProps {
-  data: LeaderboardData[];
+  leaderboard: Leadeboard;
 }
 
-const Leaderboard: FC<LeaderboardProps> = ({ data }) => {
+const LeaderboardTable: FC<LeaderboardProps> = ({ leaderboard }) => {
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -81,8 +73,8 @@ const Leaderboard: FC<LeaderboardProps> = ({ data }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((leaderboard, index) => (
-            <LeaderboardRow key={index} leaderboard={leaderboard} />
+          {leaderboard.players.map((player, index) => (
+            <LeaderboardRow key={index} player={player} />
           ))}
         </TableBody>
       </Table>
@@ -90,23 +82,48 @@ const Leaderboard: FC<LeaderboardProps> = ({ data }) => {
   );
 };
 
-// TODO: delete fake data
-const fakeData: LeaderboardData[] = [
-  { rank: 1, score: 42, gamesPlayed: 4, username: "Jinx" },
-  { rank: 2, score: 33, gamesPlayed: 3, username: "Vi" },
-];
-
 interface LeaderboardPageProps {
   setPage: (page: Page) => void;
 }
 
 export const LeaderboardPage: FC<LeaderboardPageProps> = ({ setPage }) => {
+  const [leaderboard, setLeaderboard] = useState<Leadeboard>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const lb = getLeaderboard();
+    setLeaderboard(lb);
+  }, []);
+
+  const refreshLeaderboard = async () => {
+    setIsLoading(true);
+    try {
+      const lb = await sdk.retrieveLeaderboard();
+      storeLeaderboard(lb);
+      setLeaderboard(lb);
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
+
   return (
     <Container component="main">
       <Button onClick={() => setPage("score-creation")}>
         Go to score creation
       </Button>
-      <Leaderboard data={fakeData} />
+
+      <Button variant="contained" onClick={() => refreshLeaderboard()}>
+        Refresh Leaderboard
+      </Button>
+
+      {isLoading ? (
+        <Typography>Calculating leaderboard 🧮</Typography>
+      ) : leaderboard ? (
+        <LeaderboardTable leaderboard={leaderboard} />
+      ) : (
+        <Typography>No leaderboard found 😔</Typography>
+      )}
     </Container>
   );
 };

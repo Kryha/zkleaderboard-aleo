@@ -7,6 +7,7 @@ import {
   AleoKeyProvider,
 } from "@aleohq/sdk";
 import { env } from "./utils";
+import { Leadeboard, Player, getUsers } from "./db";
 
 const keyProvider = new AleoKeyProvider();
 keyProvider.useCache(true);
@@ -46,8 +47,65 @@ const updateScore = async (userId: number, score: number) => {
   return transaction;
 };
 
-// const retrieveLeaderboard = () => {
-// TODO: retrieve scores from the mapping, calculate rankings, store in local storage
-// };
+const parseUserStruct = (struct: string, username: string): Player => {
+  // TODO: delete logs
+  console.log("🚀 ~ parseUserStruct ~ username:", username);
+  console.log("🚀 ~ parseUserStruct ~ struct:", struct);
 
-export const sdk = { updateScore };
+  const lines = struct.split("\n").slice();
+
+  let score: number | undefined;
+  let gamesPlayed: number | undefined;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+
+    const parseU64 = (val: string) =>
+      val.split(":")[1].trim().replace(";", "").replace("u64", "");
+
+    if (trimmed.startsWith("score")) {
+      const value = parseU64(trimmed);
+      score = parseInt(value);
+      return;
+    }
+
+    if (trimmed.startsWith("games_played")) {
+      const value = parseU64(trimmed);
+      gamesPlayed = parseInt(value);
+      return;
+    }
+  });
+
+  if (!score || !gamesPlayed) throw new Error("Failed parsing Aleo struct");
+
+  return { score, gamesPlayed, username, position: 0 }; // position will be calculated later
+};
+
+const retrieveLeaderboard = async (): Promise<Leadeboard> => {
+  const users = getUsers();
+
+  const promises = Object.entries(users).map(
+    async ([username, id]): Promise<Player> => {
+      const response = await networkClient.getProgramMappingValue(
+        env.VITE_PROGRAM_NAME,
+        "users",
+        `${id}field`
+      );
+      if (response instanceof Error) throw response;
+      return parseUserStruct(response, username);
+    }
+  );
+
+  const players = await Promise.all(promises);
+
+  players.sort((a, b) => -(a.score - b.score));
+
+  return {
+    players: players.map((player, index) => ({
+      ...player,
+      position: index + 1,
+    })),
+  };
+};
+
+export const sdk = { updateScore, retrieveLeaderboard };

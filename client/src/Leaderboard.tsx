@@ -1,4 +1,6 @@
 import {
+  Button,
+  Container,
   Table,
   TableBody,
   TableCell,
@@ -9,6 +11,7 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { z } from "zod";
+import { Page } from "./utils";
 
 const COLUMN_WIDTH = { sm: "8.6%", md: "15.5%", lg: "44.8%" };
 
@@ -54,13 +57,11 @@ const LeaderboardRow: FC<Props> = ({ leaderboard }) => {
   );
 };
 
-// TODO: delete fake data
-const data: LeaderboardData[] = [
-  { rank: 1, score: 42, gamesPlayed: 4, username: "Jinx" },
-  { rank: 2, score: 33, gamesPlayed: 3, username: "Vi" },
-];
+interface LeaderboardProps {
+  data: LeaderboardData[];
+}
 
-export const Leaderboard = () => {
+const Leaderboard: FC<LeaderboardProps> = ({ data }) => {
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -86,5 +87,26 @@ export const Leaderboard = () => {
         </TableBody>
       </Table>
     </TableContainer>
+  );
+};
+
+// TODO: delete fake data
+const fakeData: LeaderboardData[] = [
+  { rank: 1, score: 42, gamesPlayed: 4, username: "Jinx" },
+  { rank: 2, score: 33, gamesPlayed: 3, username: "Vi" },
+];
+
+interface LeaderboardPageProps {
+  setPage: (page: Page) => void;
+}
+
+export const LeaderboardPage: FC<LeaderboardPageProps> = ({ setPage }) => {
+  return (
+    <Container component="main">
+      <Button onClick={() => setPage("score-creation")}>
+        Go to score creation
+      </Button>
+      <Leaderboard data={fakeData} />
+    </Container>
   );
 };

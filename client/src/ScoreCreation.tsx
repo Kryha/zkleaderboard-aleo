@@ -5,8 +5,14 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { storeUser } from "./db";
+import { Page } from "./utils";
+import { FC } from "react";
 
-export const ScoreCreation = () => {
+interface Props {
+  setPage: (page: Page) => void;
+}
+
+export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     try {
       event.preventDefault();
@@ -68,6 +74,9 @@ export const ScoreCreation = () => {
             sx={{ mt: 3, mb: 2 }}
           >
             Submit Score
+          </Button>
+          <Button fullWidth onClick={() => setPage("leaderboard")}>
+            Leaderboard
           </Button>
         </Box>
       </Box>

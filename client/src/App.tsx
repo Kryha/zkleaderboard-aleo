@@ -1,14 +1,21 @@
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { ScoreCreation } from "./ScoreCreation";
-import { Leaderboard } from "./Leaderboard";
+import { ScoreCreationPage } from "./ScoreCreation";
+import { LeaderboardPage } from "./Leaderboard";
+import { useState } from "react";
+import { type Page } from "./utils";
 
 const theme = createTheme();
 
 function App() {
+  const [page, setPage] = useState<Page>("score-creation");
+
   return (
     <ThemeProvider theme={theme}>
-      <ScoreCreation />
-      <Leaderboard />
+      {page === "score-creation" ? (
+        <ScoreCreationPage setPage={setPage} />
+      ) : (
+        <LeaderboardPage setPage={setPage} />
+      )}
     </ThemeProvider>
   );
 }

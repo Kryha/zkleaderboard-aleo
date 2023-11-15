@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@aleohq/sdk':
-    specifier: ^0.6.6
-    version: 0.6.6
+    specifier: ^0.6.7
+    version: 0.6.7
   '@emotion/react':
     specifier: ^11.11.1
     version: 11.11.1(@types/react@18.2.37)(react@18.2.0)
@@ -69,8 +69,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /@aleohq/sdk@0.6.6:
-    resolution: {integrity: sha512-kD0uRAkK4sGAcwdN4HIKzvYlsfb6HbLb5R2BMzihpy1WLt/rkPyTpdrUFHxcPFdvADJwbKBz147uf9uA3rqvEA==}
+  /@aleohq/sdk@0.6.7:
+    resolution: {integrity: sha512-Ut9M8AL/HPbk9DN+M0kkS2dLs87ZgorqrJ4I+9nw2PEIXK2/9AxfQPAuQi4yR3xazpgLUBS3Vix41P+S1s6SXA==}
     dependencies:
       '@aleohq/wasm': 0.6.6
       comlink: 4.4.1
@@ -954,13 +954,13 @@ packages:
   /@types/concat-stream@1.6.1:
     resolution: {integrity: sha512-eHE4cQPoj6ngxBZMvVf6Hw7Mh4jMW4U9lpGmS5GBPB9RYxlFg+CHaVN7ErNY4W9XfLIEn20b4VDYaIrbq0q4uA==}
     dependencies:
-      '@types/node': 8.10.66
+      '@types/node': 10.17.60
     dev: false
 
   /@types/form-data@0.0.33:
     resolution: {integrity: sha512-8BSvG1kGm83cyJITQMZSulnl6QV8jqAGreJsc5tPu1Jq0vTSOiY/k24Wx82JRpWwZSqrala6sd5rWi6aNXvqcw==}
     dependencies:
-      '@types/node': 8.10.66
+      '@types/node': 10.17.60
     dev: false
 
   /@types/json-schema@7.0.15:

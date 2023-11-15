@@ -6,7 +6,6 @@ program leaderboard.aleo {
 
     mapping users: field => User;
 
-    // TODO: pass address instead of user id, hash it and use the hash as a key
     transition update_score(user_id: field, new_score: u64) {
         assert_eq(self.caller, self.signer);
         return then finalize(user_id, new_score);

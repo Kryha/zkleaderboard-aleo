@@ -49,6 +49,7 @@ const workerFunctions = {
 
     if (txId instanceof Error) throw txId;
 
+    // TODO: instead of waiting, we can check the transaction every x seconds for x minutes
     await wait();
 
     const transaction = await programManager.networkClient.getTransaction(txId);

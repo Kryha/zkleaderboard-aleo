@@ -6,7 +6,7 @@ import {
   KeySearchParams,
   AleoKeyProvider,
 } from "@aleohq/sdk";
-import { env } from "./utils";
+import { env, wait } from "./utils";
 import { Leadeboard, Player, getUsers } from "./db";
 
 const keyProvider = new AleoKeyProvider();
@@ -22,8 +22,11 @@ const programManager = new ProgramManager(
   keyProvider,
   recordProvider
 );
+programManager.setAccount(account);
 
 const updateScore = async (userId: number, score: number) => {
+  console.log("🚀 ~ updateScore ~ userId:", userId);
+  console.log("🚀 ~ updateScore ~ score:", score);
   const functionName = "update_score";
   const keySearchParams: KeySearchParams = {
     cacheKey: `${env.VITE_PROGRAM_NAME}:${functionName}`,
@@ -31,14 +34,17 @@ const updateScore = async (userId: number, score: number) => {
   const txId = await programManager.execute(
     env.VITE_PROGRAM_NAME,
     "update_score",
-    0.02,
+    0.3,
     false,
     [`${userId}field`, `${score}u64`],
     undefined,
     keySearchParams
   );
+  console.log("🚀 ~ updateScore ~ txId:", txId);
 
   if (txId instanceof Error) throw txId;
+
+  await wait();
 
   const transaction = await programManager.networkClient.getTransaction(txId);
 

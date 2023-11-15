@@ -9,3 +9,7 @@ const envSchema = z.object({
 });
 
 export const env = envSchema.parse(import.meta.env);
+
+// 3 minutes default waiting time
+export const wait = (ms = 180000) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

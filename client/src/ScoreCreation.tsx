@@ -7,7 +7,7 @@ import Container from "@mui/material/Container";
 import { getUserMappingId } from "./db";
 import { Page } from "./utils";
 import { FC, useState } from "react";
-import { sdk } from "./sdk";
+import { workerClient } from "./worker-client";
 
 interface Props {
   setPage: (page: Page) => void;
@@ -30,7 +30,7 @@ export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
       const score = parseInt(sc.toString());
 
       const mappingId = getUserMappingId(username);
-      await sdk.updateScore(mappingId, score);
+      await workerClient.updateScore({ userId: mappingId, score });
 
       console.log(`${username} stored with id ${mappingId}`);
     } catch (error) {
@@ -51,7 +51,9 @@ export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
         }}
       >
         <Typography component="h1" variant="h5">
-          {isLoading ? "Submitting user score..." : "Create user score"}
+          {isLoading
+            ? "Submitting user score. This should take about 3 minutes."
+            : "Create user score"}
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
@@ -62,6 +64,7 @@ export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
             label="Username"
             name="username"
             autoFocus
+            disabled={isLoading}
           />
           <TextField
             margin="normal"
@@ -71,12 +74,14 @@ export const ScoreCreationPage: FC<Props> = ({ setPage }) => {
             label="Score"
             type="number"
             id="score"
+            disabled={isLoading}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={isLoading}
           >
             Submit Score
           </Button>

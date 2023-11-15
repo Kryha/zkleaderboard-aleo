@@ -44,6 +44,12 @@ Navigate to the `client/` directory, this is where you will be running most of y
 cd client/
 ```
 
+Install the required dependencies:
+
+```sh
+pnpm install
+```
+
 Build the `.aleo` program:
 
 ```sh

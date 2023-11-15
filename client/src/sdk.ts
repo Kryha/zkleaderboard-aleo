@@ -3,10 +3,9 @@ import {
   AleoNetworkClient,
   NetworkRecordProvider,
   ProgramManager,
-  KeySearchParams,
   AleoKeyProvider,
 } from "@aleohq/sdk";
-import { env, wait } from "./utils";
+import { env } from "./utils";
 import { Leadeboard, Player, getUsers } from "./db";
 
 const keyProvider = new AleoKeyProvider();
@@ -24,41 +23,8 @@ const programManager = new ProgramManager(
 );
 programManager.setAccount(account);
 
-const updateScore = async (userId: number, score: number) => {
-  console.log("🚀 ~ updateScore ~ userId:", userId);
-  console.log("🚀 ~ updateScore ~ score:", score);
-  const functionName = "update_score";
-  const keySearchParams: KeySearchParams = {
-    cacheKey: `${env.VITE_PROGRAM_NAME}:${functionName}`,
-  };
-  const txId = await programManager.execute(
-    env.VITE_PROGRAM_NAME,
-    "update_score",
-    0.3,
-    false,
-    [`${userId}field`, `${score}u64`],
-    undefined,
-    keySearchParams
-  );
-  console.log("🚀 ~ updateScore ~ txId:", txId);
-
-  if (txId instanceof Error) throw txId;
-
-  await wait();
-
-  const transaction = await programManager.networkClient.getTransaction(txId);
-
-  if (transaction instanceof Error) throw transaction;
-
-  return transaction;
-};
-
 const parseUserStruct = (struct: string, username: string): Player => {
-  // TODO: delete logs
-  console.log("🚀 ~ parseUserStruct ~ username:", username);
-  console.log("🚀 ~ parseUserStruct ~ struct:", struct);
-
-  const lines = struct.split("\n").slice();
+  const lines = struct.split("\n");
 
   let score: number | undefined;
   let gamesPlayed: number | undefined;
@@ -67,7 +33,7 @@ const parseUserStruct = (struct: string, username: string): Player => {
     const trimmed = line.trim();
 
     const parseU64 = (val: string) =>
-      val.split(":")[1].trim().replace(";", "").replace("u64", "");
+      val.split(":")[1].trim().replace(",", "").replace("u64", "");
 
     if (trimmed.startsWith("score")) {
       const value = parseU64(trimmed);
@@ -114,4 +80,4 @@ const retrieveLeaderboard = async (): Promise<Leadeboard> => {
   };
 };
 
-export const sdk = { updateScore, retrieveLeaderboard };
+export const sdk = { retrieveLeaderboard };

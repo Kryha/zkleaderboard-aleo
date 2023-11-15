@@ -12,7 +12,7 @@ import {
 import { FC, useEffect, useState } from "react";
 import { Page } from "./utils";
 import { Leadeboard, Player, getLeaderboard, storeLeaderboard } from "./db";
-import { workerClient } from "./worker-client";
+import { sdk } from "./sdk";
 
 const COLUMN_WIDTH = { sm: "8.6%", md: "15.5%", lg: "44.8%" };
 
@@ -98,7 +98,7 @@ export const LeaderboardPage: FC<LeaderboardPageProps> = ({ setPage }) => {
   const refreshLeaderboard = async () => {
     setIsLoading(true);
     try {
-      const lb = await workerClient.retrieveLeaderboard();
+      const lb = await sdk.retrieveLeaderboard();
       storeLeaderboard(lb);
       setLeaderboard(lb);
     } catch (error) {

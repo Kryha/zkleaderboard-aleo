@@ -55,5 +55,5 @@ export const getLeaderboard = (): Leadeboard | undefined => {
   const unparsed = localStorage.getItem("leaderboard");
   if (!unparsed) return;
 
-  return leaderboardSchema.parse(unparsed);
+  return leaderboardSchema.parse(JSON.parse(unparsed));
 };

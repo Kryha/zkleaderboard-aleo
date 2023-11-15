@@ -9,7 +9,6 @@ import {
 
 import { env, wait } from "./utils";
 import { updateScoreArgsSchema } from "./types";
-import { getUsers, type Leadeboard, type Player } from "./db";
 
 const keyProvider = new AleoKeyProvider();
 keyProvider.useCache(true);
@@ -25,40 +24,6 @@ const programManager = new ProgramManager(
   recordProvider
 );
 programManager.setAccount(account);
-
-const parseUserStruct = (struct: string, username: string): Player => {
-  // TODO: delete logs
-  console.log("🚀 ~ parseUserStruct ~ username:", username);
-  console.log("🚀 ~ parseUserStruct ~ struct:", struct);
-
-  const lines = struct.split("\n").slice();
-
-  let score: number | undefined;
-  let gamesPlayed: number | undefined;
-
-  lines.forEach((line) => {
-    const trimmed = line.trim();
-
-    const parseU64 = (val: string) =>
-      val.split(":")[1].trim().replace(";", "").replace("u64", "");
-
-    if (trimmed.startsWith("score")) {
-      const value = parseU64(trimmed);
-      score = parseInt(value);
-      return;
-    }
-
-    if (trimmed.startsWith("games_played")) {
-      const value = parseU64(trimmed);
-      gamesPlayed = parseInt(value);
-      return;
-    }
-  });
-
-  if (!score || !gamesPlayed) throw new Error("Failed parsing Aleo struct");
-
-  return { score, gamesPlayed, username, position: 0 }; // position will be calculated later
-};
 
 const workerFunctions = {
   updateScore: async (args: unknown) => {
@@ -91,35 +56,6 @@ const workerFunctions = {
     if (transaction instanceof Error) throw transaction;
 
     return transaction;
-  },
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  retrieveLeaderboard: async (_args: unknown): Promise<Leadeboard> => {
-    // TODO: if localStorage access does not work pass as argument
-    const users = getUsers();
-
-    const promises = Object.entries(users).map(
-      async ([username, id]): Promise<Player> => {
-        const response = await networkClient.getProgramMappingValue(
-          env.VITE_PROGRAM_NAME,
-          "users",
-          `${id}field`
-        );
-        if (response instanceof Error) throw response;
-        return parseUserStruct(response, username);
-      }
-    );
-
-    const players = await Promise.all(promises);
-
-    players.sort((a, b) => -(a.score - b.score));
-
-    return {
-      players: players.map((player, index) => ({
-        ...player,
-        position: index + 1,
-      })),
-    };
   },
 };
 

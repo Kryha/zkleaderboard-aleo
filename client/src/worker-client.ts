@@ -4,7 +4,6 @@ import {
   type ZkappWorkerRequest,
 } from "./worker";
 import { UpdateScoreArgs } from "./types";
-import { Leadeboard } from "./db";
 
 export class ZkAppWorkerClient {
   private worker: Worker;
@@ -49,11 +48,6 @@ export class ZkAppWorkerClient {
 
   async updateScore(args: UpdateScoreArgs) {
     await this.call("updateScore", args);
-  }
-
-  async retrieveLeaderboard() {
-    const res = (await this.call("retrieveLeaderboard", {})) as Leadeboard;
-    return res;
   }
 }
 

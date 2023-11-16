@@ -63,7 +63,9 @@ const retrieveLeaderboard = async (): Promise<Leadeboard> => {
         "users",
         `${id}field`
       );
-      if (response instanceof Error) throw response;
+      if (response instanceof Error || !response || response === "null") {
+        throw response;
+      }
       return parseUserStruct(response, username);
     }
   );

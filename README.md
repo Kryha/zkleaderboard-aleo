@@ -2,6 +2,8 @@
 
 Learn how to build and deploy your own leaderboard on-chain, using Aleo's network and Leo language. Demo project used for zkLeaderboard workshop. Part of zkHouse Istanbul during DevConnect 2023.
 
+You can find details about the [Aleo Hackathon Bounty here](https://ecovirtual.notion.site/zkHouse-Hackathon-Bounty-f9bb5ed4e1b24d3db82480ece5f90dc9)
+
 ## Before we begin
 
 ### PNPM
@@ -19,6 +21,10 @@ corepack enable
 Install [Leo Wallet](https://www.leo.app/) and follow the steps to create an Aleo account.
 
 Give yourself some credits by tapping the faucet. You can find it on the [Aleo Discord](https://discord.com/invite/aleohq) server. Currently the maximum amount of credits per mint is 15.
+
+### Leo CLI
+
+Make sure you have installed the latest version of the [Leo CLI](https://github.com/AleoHQ/leo)
 
 ### Obscura key
 
